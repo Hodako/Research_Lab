@@ -1,5 +1,8 @@
+// src/components/ResponsiveResearchPlatform.js
 import React, { useState, useEffect } from 'react';
-import { Search, BookOpen, TrendingUp, MessageSquare, Share2, ThumbsUp, Bookmark, Bell, Upload, Moon, Sun, Menu, X, ChevronDown, Eye, Clock, Download } from 'lucide-react';
+import { useHistory } from 'react-router-dom';
+import { Search, BookOpen, MessageSquare, Share2, ThumbsUp, Bookmark, Bell, Upload, Moon, Sun, Menu, X, Eye, Clock } from 'lucide-react';
+import axios from 'axios';
 
 const ResponsiveResearchPlatform = () => {
   const [activeTab, setActiveTab] = useState('trending');
@@ -7,6 +10,9 @@ const ResponsiveResearchPlatform = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const history = useHistory();
 
   // Handle window resize
   useEffect(() => {
@@ -23,36 +29,41 @@ const ResponsiveResearchPlatform = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const articles = [
-    {
-      id: 1,
-      title: "The Evolution of Religious Thought in Modern Society",
-      author: "Dr. Sarah Chen",
-      institution: "Institute of Social Studies",
-      abstract: "A comprehensive analysis of how religious thinking has evolved alongside scientific advancement...",
-      tags: ["Sociology", "Religious Studies", "Scientific Method"],
-      likes: 342,
-      comments: 56,
-      shares: 89,
-      readTime: "8 min",
-      views: 1234,
-      publishDate: "Jan 28, 2025"
-    },
-    {
-      id: 2,
-      title: "Bridging Science and Faith: A Data-Driven Approach",
-      author: "Prof. Michael Rahman",
-      institution: "Center for Rational Discourse",
-      abstract: "This study presents statistical analysis of the correlation between scientific literacy and religious extremism...",
-      tags: ["Data Science", "Religious Studies", "Social Impact"],
-      likes: 289,
-      comments: 43,
-      shares: 67,
-      readTime: "12 min",
-      views: 892,
-      publishDate: "Jan 30, 2025"
+  // Check for user authentication
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Verify token with backend
+      axios.get('http://localhost:5000/api/auth/verify', {
+        headers: { 'Authorization': token }
+      })
+        .then(response => {
+          setUser(response.data.user);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+        });
     }
-  ];
+  }, []);
+
+  // Fetch articles from backend
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/articles')
+      .then(response => {
+        setArticles(response.data.articles);
+      })
+      .catch(error => {
+        console.error('Error fetching articles:', error);
+      });
+  }, []);
+
+  const handleUploadClick = () => {
+    if (!user) {
+      history.push('/login');
+    } else {
+      history.push('/upload');
+    }
+  };
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -139,10 +150,28 @@ const ResponsiveResearchPlatform = () => {
                 )}
               </button>
               <Bell className={`h-6 w-6 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
-              <button className={`${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} text-white px-3 py-2 rounded-lg flex items-center`}>
-                <Upload className="h-4 w-4" />
-                <span className="hidden sm:block ml-2">Upload</span>
-              </button>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
+                    {user.email}
+                  </span>
+                  <button
+                    onClick={handleUploadClick}
+                    className={`${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} text-white px-3 py-2 rounded-lg flex items-center`}
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span className="hidden sm:block ml-2">Upload</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleUploadClick}
+                  className={`${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} text-white px-3 py-2 rounded-lg flex items-center`}
+                >
+                  <Upload className="h-4 w-4" />
+                  <span className="hidden sm:block ml-2">Upload</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -209,7 +238,7 @@ const ResponsiveResearchPlatform = () => {
             >
               {/* Article Image */}
               <img
-                src="placeholder.png"
+                src={article.image_url || '/placeholder.png'}
                 alt="Article thumbnail"
                 className="w-full h-48 sm:h-64 object-cover"
               />
@@ -238,7 +267,7 @@ const ResponsiveResearchPlatform = () => {
 
                 {/* Tags - Responsive */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {article.tags.map(tag => (
+                  {article.tags.split(',').map(tag => (
                     <span
                       key={tag}
                       className={`px-2 py-1 rounded-full text-xs sm:text-sm ${
@@ -247,7 +276,7 @@ const ResponsiveResearchPlatform = () => {
                           : 'bg-blue-50 text-blue-700'
                       }`}
                     >
-                      {tag}
+                      {tag.trim()}
                     </span>
                   ))}
                 </div>
