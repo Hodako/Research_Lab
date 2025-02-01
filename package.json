@@ -3,14 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "lucide-react": "^0.2.0"
+    "react": "^18.2.0", // Updated to a more recent 18.x version
+    "react-dom": "^18.2.0", // Updated to a more recent 18.x version
+    "lucide-react": "^0.298.0" // Updated to a more recent version
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": { // Added devDependencies for react-scripts
+    "react-scripts": "^5.0.1" // Updated to a more recent version
+  },
+    "browserslist": { // Recommended for better browser compatibility
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
