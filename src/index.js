@@ -1,7 +1,6 @@
-// src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import Login from './components/Login';
@@ -11,12 +10,12 @@ import Upload from './components/Upload';
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/upload" component={Upload} />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/upload" element={<Upload />} />
+      </Routes>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')
