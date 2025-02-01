@@ -1,6 +1,5 @@
-// src/components/ResponsiveResearchPlatform.js
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, MessageSquare, Share2, ThumbsUp, Bookmark, Bell, Upload, Moon, Sun, Menu, X, Eye, Clock } from 'lucide-react';
 import axios from 'axios';
 
@@ -12,7 +11,7 @@ const ResponsiveResearchPlatform = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [articles, setArticles] = useState([]);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Handle window resize
   useEffect(() => {
@@ -59,9 +58,9 @@ const ResponsiveResearchPlatform = () => {
 
   const handleUploadClick = () => {
     if (!user) {
-      history.push('/login');
+      navigate('/login');
     } else {
-      history.push('/upload');
+      navigate('/upload');
     }
   };
 
