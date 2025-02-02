@@ -5,6 +5,7 @@ import axios from 'axios';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,6 +14,7 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       window.location.href = "/"; // Redirect to home page
     } catch (error) {
+      setError('Invalid email or password');
       console.error("Error logging in: ", error);
     }
   };
@@ -29,6 +31,7 @@ const Login = () => {
             </Link>
           </p>
         </div>
+        {error && <p className="text-center text-red-500">{error}</p>}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           <div className="rounded-md shadow-sm -space-y-px">
